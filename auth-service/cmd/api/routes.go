@@ -1,0 +1,31 @@
+package main
+
+import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
+	"net/http"
+)
+
+func (a App) routes() http.Handler {
+	mux := chi.NewRouter()
+
+	mux.Use(cors.Handler(cors.Options{
+		AllowedOrigins:     []string{"https://*", "http://*"},
+		AllowedMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:     []string{"Link"},
+		AllowCredentials:   true,
+		MaxAge:             300,
+		AllowOriginFunc:    nil,
+		OptionsPassthrough: false,
+		Debug:              false,
+	}))
+
+	mux.Post("/signup", a.SignUp)
+	mux.Post("/signin", a.SignIn)
+	mux.Post("/signout", a.SignOut)
+	mux.Patch("/user", a.Update)
+	mux.Get("/user", a.GetOne)
+
+	return mux
+}
