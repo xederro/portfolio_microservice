@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/xederro/auth-service/data"
+	"github.com/xederro/portfolio/auth-service/data"
 	"net/http"
 )
 

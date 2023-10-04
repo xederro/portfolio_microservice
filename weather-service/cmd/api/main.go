@@ -2,20 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/xederro/portfolio/auth-service/data"
+	"github.com/xederro/portfolio/weather-service/data"
 	"log"
 	"net/http"
 )
 
-const webPort = "8001"
+const webPort = "8002"
 
 type App struct {
-	User data.IModel
+	Weather data.Weather
 }
 
 func main() {
 	app := App{
-		User: data.NewUser(),
+		Weather: data.NewWeather(),
 	}
 
 	srv := &http.Server{
