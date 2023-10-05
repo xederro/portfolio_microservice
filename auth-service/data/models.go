@@ -124,3 +124,13 @@ func (m Model) ResetPassword(email string) error {
 	}
 	return nil
 }
+
+func (m Model) GetUUID(token string) (string, error) {
+	ctx := context.TODO()
+	user, err := db.Auth.User(ctx, token)
+	if err != nil {
+		return "", err
+	}
+
+	return user.ID, nil
+}

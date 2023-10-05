@@ -52,7 +52,7 @@ func (w Weather) GetTimeWindow(start time.Time, stop time.Time, span uint8) (*[]
 	return &results, nil
 }
 
-func (w Weather) Insert(cred string) error {
+func (w Weather) Insert() error {
 	var m map[string]interface{}
 	err := db.DB.From("weather").Insert(w).Execute(&m)
 	if err != nil {

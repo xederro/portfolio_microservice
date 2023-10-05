@@ -29,3 +29,19 @@ services:
       replicas: 1
     ports:
       - 8002:8002
+  shortener:
+    env_file:
+      - .env
+    build:
+      context:
+        ./shortener-service
+      dockerfile:
+        ./Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 8003:8003
+    depends_on:
+      - auth

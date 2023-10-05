@@ -35,4 +35,5 @@ type IModel interface {
 
 	// ResetPassword is the method we will use to reset password.
 	ResetPassword(email string) error
+	GetUUID(token string) (string, error)
 }
