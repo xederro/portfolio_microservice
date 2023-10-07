@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/xederro/portfolio/weather-service/data"
 	"net/http"
 	"time"
 )
@@ -36,4 +38,21 @@ func (a App) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a.writeJSON(w, http.StatusAccepted, get)
+}
+
+func (a App) Insert(w http.ResponseWriter, r *http.Request) {
+	var n data.Weather
+	err := a.readJSON(w, r, &n)
+	if err != nil {
+		a.errorJSON(w, err)
+		return
+	}
+
+	err = n.Insert(chi.URLParam(r, "cred"))
+	if err != nil {
+		a.errorJSON(w, err)
+		return
+	}
+
+	a.writeJSON(w, http.StatusAccepted, nil)
 }

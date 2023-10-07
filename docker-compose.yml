@@ -14,7 +14,7 @@ services:
       mode: replicated
       replicas: 1
     ports:
-      - 8001:8001
+      - "8001:8001"
   weather:
     env_file:
       - .env
@@ -28,7 +28,7 @@ services:
       mode: replicated
       replicas: 1
     ports:
-      - 8002:8002
+      - "8002:8002"
   shortener:
     env_file:
       - .env
@@ -42,6 +42,20 @@ services:
       mode: replicated
       replicas: 1
     ports:
-      - 8003:8003
+      - "8003:8003"
     depends_on:
       - auth
+  frontend:
+    env_file:
+      - .env
+    build:
+      context:
+        ./frontend-service
+      dockerfile:
+        ./Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "80:3000"

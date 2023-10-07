@@ -23,7 +23,7 @@ func (a App) routes() http.Handler {
 
 	mux.Get("/weather/last", a.Last)
 	mux.Get("/weather", a.Get)
-	//mux.Post("/weather/{cred}", a.Insert)
+	mux.Post("/weather/{cred}", a.Insert)
 
 	return mux
 }

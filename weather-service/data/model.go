@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"github.com/nedpals/supabase-go"
 	"log"
 	"os"
@@ -28,6 +29,7 @@ func (w Weather) GetLast() (*Weather, error) {
 		Select("*").
 		Limit(1).
 		Single().
+		Filter("order", "timestamp", "desc").
 		Execute(&results)
 	if err != nil {
 		return nil, err
@@ -41,10 +43,11 @@ func (w Weather) GetTimeWindow(start time.Time, stop time.Time, span uint8) (*[]
 	err := db.DB.
 		From("weather").
 		Select("*").
+		Filter("order", "timestamp", "desc").
 		Eq("location", "KSW").
 		Lte("timestamp", start.Format("2006-01-02T15:04:05")).
 		Gte("timestamp", stop.Format("2006-01-02T15:04:05")).
-		Execute(&results)
+		Execute(results)
 	if err != nil {
 		return nil, err
 	}
@@ -52,12 +55,15 @@ func (w Weather) GetTimeWindow(start time.Time, stop time.Time, span uint8) (*[]
 	return &results, nil
 }
 
-func (w Weather) Insert() error {
-	var m map[string]interface{}
-	err := db.DB.From("weather").Insert(w).Execute(&m)
-	if err != nil {
-		return err
-	}
+func (w Weather) Insert(cred string) error {
+	if cred == os.Getenv("WeatherKey") {
+		var m []Weather
+		err := db.DB.From("weather").Insert(w).Execute(&m)
+		if err != nil {
+			return err
+		}
 
-	return nil
+		return nil
+	}
+	return errors.New("unauthenticated Insert")
 }
