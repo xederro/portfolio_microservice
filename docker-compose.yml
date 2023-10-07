@@ -45,6 +45,20 @@ services:
       - "8003:8003"
     depends_on:
       - auth
+  qrcode:
+    env_file:
+      - .env
+    build:
+      context:
+        ./qrcode-service
+      dockerfile:
+        ./Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "8004:8004"
   frontend:
     env_file:
       - .env
