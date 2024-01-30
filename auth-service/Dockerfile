@@ -2,7 +2,8 @@ FROM golang:1.21-alpine as builder
 LABEL authors="xederro"
 
 RUN mkdir /app
-COPY . /app
+COPY ./auth-service /app
+COPY ./config/firebase.json /app
 WORKDIR /app
 
 RUN CGO_ENABLED=0 go build -o auth ./cmd/api

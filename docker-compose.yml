@@ -6,9 +6,9 @@ services:
       - .env
     build:
       context:
-        ./auth-service
+        .
       dockerfile:
-        ./Dockerfile
+        ./auth-service/Dockerfile
     restart: always
     deploy:
       mode: replicated

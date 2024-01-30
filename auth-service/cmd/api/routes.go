@@ -22,10 +22,8 @@ func (a App) routes() http.Handler {
 	}))
 
 	mux.Post("/signup", a.SignUp)
-	mux.Post("/signin", a.SignIn)
-	mux.Post("/signout", a.SignOut)
 	mux.Patch("/user", a.Update)
-	mux.Get("/user", a.GetOne)
+	mux.Delete("/user", a.Delete)
 
 	return mux
 }

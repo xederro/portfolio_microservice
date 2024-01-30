@@ -25,66 +25,6 @@ func (a App) SignUp(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (a *App) SignOut(w http.ResponseWriter, r *http.Request) {
-	token, err := r.Cookie("Bearer")
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	err = a.User.SignOut(token.Value)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	a.writeJSON(w, http.StatusAccepted, jsonResponse{
-		Error:   false,
-		Message: "Got Model",
-	})
-}
-
-func (a App) SignIn(w http.ResponseWriter, r *http.Request) {
-	var u data.Model
-	err := a.readJSON(w, r, &u)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	t, err := u.SignIn()
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	a.writeJSON(w, http.StatusAccepted, jsonResponse{
-		Error:   false,
-		Message: "Signed In",
-		Data:    t,
-	})
-}
-
-func (a App) GetOne(w http.ResponseWriter, r *http.Request) {
-	token, err := r.Cookie("Bearer")
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	up, err := a.User.GetOne(token.Value)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	a.writeJSON(w, http.StatusAccepted, jsonResponse{
-		Error:   false,
-		Message: "Got Model",
-		Data:    up,
-	})
-}
-
 func (a App) Update(w http.ResponseWriter, r *http.Request) {
 	token, err := r.Cookie("Bearer")
 	if err != nil {
@@ -99,7 +39,7 @@ func (a App) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = m.Update(token.Value, m.UpdateData)
+	err = m.Update(token.Value)
 	if err != nil {
 		a.errorJSON(w, err)
 		return
@@ -112,14 +52,20 @@ func (a App) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a App) Delete(w http.ResponseWriter, r *http.Request) {
-	var m data.Model
-	err := a.readJSON(w, r, &m)
+	token, err := r.Cookie("Bearer")
 	if err != nil {
 		a.errorJSON(w, err)
 		return
 	}
 
-	err = m.Delete()
+	var m data.Model
+	err = a.readJSON(w, r, &m)
+	if err != nil {
+		a.errorJSON(w, err)
+		return
+	}
+
+	err = m.Delete(token.Value)
 	if err != nil {
 		a.errorJSON(w, err)
 		return

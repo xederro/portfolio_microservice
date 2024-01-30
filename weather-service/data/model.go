@@ -1,39 +1,63 @@
 package data
 
 import (
+	"cloud.google.com/go/firestore"
+	"context"
 	"errors"
-	"github.com/nedpals/supabase-go"
+	"firebase.google.com/go/v4"
+	"fmt"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"log"
 	"os"
 	"time"
 )
 
-var db *supabase.Client
+var db *firestore.Client
 
 func NewWeather() Weather {
-	NewDB := supabase.CreateClient(os.Getenv("SupabaseUrl"), os.Getenv("SupabaseKey"))
-
-	if NewDB == nil {
-		log.Panic("Cant connect to Database")
+	opt := option.WithCredentialsFile(os.Getenv("FirebaseConfigPath"))
+	config := &firebase.Config{ProjectID: os.Getenv("FirebaseProjectID")}
+	newApp, err := firebase.NewApp(context.Background(), config, opt)
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
 	}
 
-	db = NewDB
+	database, err := newApp.Firestore(context.Background())
+	if err != nil {
+		log.Fatalf("error initializing database: %v\n", err)
+	}
+	db = database
+	defer func(db *firestore.Client) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 
 	return Weather{}
 }
 
 func (w Weather) GetLast() (*Weather, error) {
 	var results Weather
-	err := db.DB.
-		From("weather").
-		Select("*").
+	docs := db.Collection("/weather").
 		Limit(1).
-		Single().
-		Filter("order", "timestamp", "desc").
-		Execute(&results)
-	if err != nil {
-		return nil, err
+		Select("*").
+		OrderBy("timestamp", firestore.Desc).
+		Documents(context.TODO())
+
+	for {
+		doc, err := docs.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(doc.Data())
 	}
+
+	docs.Stop()
 
 	return &results, nil
 }

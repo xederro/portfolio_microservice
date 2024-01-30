@@ -1,0 +1,10 @@
+{{template "main" .}}
+
+{{define "content"}}
+    <div>
+        ARGH! ERROR: {{.}}
+    </div>
+    <div>
+        <img src="https://http.cat/{{.}}.jpg" class="img-fluid" alt="Image of cat">
+    </div>
+{{end}}

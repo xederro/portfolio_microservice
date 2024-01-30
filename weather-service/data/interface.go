@@ -4,7 +4,6 @@ import "time"
 
 type Weather struct {
 	Timestamp time.Time `json:"timestamp"`
-	Location  string    `json:"location"`
 	Temp      float32   `json:"temp"`
 	Hum       float32   `json:"hum"`
 	Press     float32   `json:"press"`

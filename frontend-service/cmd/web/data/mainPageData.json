@@ -1,0 +1,64 @@
+{
+    "education": [
+        {
+            "name": "Wroclaw University of Science and Technology",
+            "degree": "Bachelor of Science",
+            "major": "Computer Science",
+            "year": "2022-Now",
+            "place": "Wroclaw, Poland"
+        },
+        {
+            "name": "Maria Skłodowska-Curie Vocational School Complex",
+            "degree": "Technician/Specialist",
+            "major": "Computer Science",
+            "year": "2018-2022",
+            "place": "Puławy, Poland",
+            "bullet": [
+                "Secondary Technical School with an average grade of 5.53",
+                "Vocational qualification diploma in the IT Technician profession",
+                "Finalist and 3rd place in the 'Sigma Kwadrat' statistical-demographic competition organized by the Central Statistical Office (GUS)"
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "projectName": "Invoice Generator",
+            "lang": "Vue",
+            "langColor": "positive",
+            "description": "Invoice Management System",
+            "link": "https://github.com/xederro/Invoice_Generator",
+            "technologies": ["Vue", "Bootstrap", "Electron", "Nedb"]
+        },
+        {
+            "projectName": "Link Shortener",
+            "lang": "GO",
+            "langColor": "info",
+            "description": "Let your long link be small and easy to remember",
+            "link": "/short",
+            "technologies": ["GoLang", "PostgreSQL", "Quasar", "Vue"]
+        },
+        {
+            "projectName": "Photo Editor",
+            "lang": "Vue",
+            "langColor": "positive",
+            "description": "Simple photo editor",
+            "link": "https://github.com/xederro/photo-editor",
+            "technologies": ["Vue", "Bootstrap", "Electron"]
+        },
+        {
+            "projectName": "Weather station",
+            "lang": "GO",
+            "langColor": "info",
+            "description": "A weather station and its web interface",
+            "link": "/weather",
+            "technologies": ["GoLang", "PostgreSQL", "Quasar", "Vue", "Arduino"]
+        },
+        {
+            "projectName": "Portfolio",
+            "lang": "PHP",
+            "description": "Portfolio site, backend written in PHP, first version of this site",
+            "link": "/weather",
+            "technologies": ["PHP", "MySQL", "Bootstrap", "Vue", "Firebase"]
+        }
+    ]
+}
