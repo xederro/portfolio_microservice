@@ -7,7 +7,7 @@
                                newTab.classList.add('selected')">
         <button hx-push-url="true" hx-get="/" hx-swap="innerHTML" hx-target="#page-content" class="selected" role="tab" aria-selected="true"
                 aria-controls="page-content">Home</button>
-        <button hx-push-url="true" hx-get="/" hx-swap="innerHTML" hx-target="#page-content"  role="tab" aria-selected="false" aria-controls="page-content">Tab 2</button>
+        <button hx-push-url="true" hx-get="/qrcode" hx-swap="innerHTML" hx-target="#page-content"  role="tab" aria-selected="false" aria-controls="page-content">QR Code</button>
         <button hx-push-url="true" hx-get="/" hx-swap="innerHTML" hx-target="#page-content"  role="tab" aria-selected="false" aria-controls="page-content">Tab 3</button>
         <button @click="dark = !dark">
             <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"

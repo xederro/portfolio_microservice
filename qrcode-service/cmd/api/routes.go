@@ -12,7 +12,7 @@ func (a App) routes() http.Handler {
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:     []string{"https://*", "http://*"},
 		AllowedMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "hx-current-url", "hx-request"},
 		ExposedHeaders:     []string{"Link"},
 		AllowCredentials:   true,
 		MaxAge:             300,
@@ -21,7 +21,10 @@ func (a App) routes() http.Handler {
 		Debug:              false,
 	}))
 
-	mux.Get("/qrcode", a.GetQRCode)
+	mux.Post("/", a.GetQRCode)
+	mux.Options("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	return mux
 }

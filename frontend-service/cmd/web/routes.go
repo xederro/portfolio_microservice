@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/xederro/portfolio/frontend-service/cmd/web/data"
 	"net/http"
+	"os"
 )
 
 func (a App) routes() http.Handler {
@@ -31,13 +32,22 @@ func (a App) routes() http.Handler {
 		if err != nil {
 			a.error(w, http.StatusInternalServerError, htmx.IsHTMX(r))
 			fmt.Println(err)
+			return
 		}
 
 		a.page(w, "main.page.gohtml", &Data{
-			PageName: "Home",
-			//SiteAddress:      os.Getenv("PageAddress"),
-			SiteAddress:      "xederro.pl",
+			PageName:    "Home",
+			SiteAddress: os.Getenv("PageAddress"),
+			//SiteAddress:      "xederro.pl",
 			PageSpecificData: d,
+		}, htmx.IsHTMX(r))
+	})
+
+	mux.Get("/qrcode", func(w http.ResponseWriter, r *http.Request) {
+		a.page(w, "qrcode.page.gohtml", &Data{
+			PageName:    "QRCode",
+			SiteAddress: os.Getenv("PageAddress"),
+			//SiteAddress: "xederro.pl",
 		}, htmx.IsHTMX(r))
 	})
 

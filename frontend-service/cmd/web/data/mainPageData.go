@@ -25,7 +25,7 @@ type MainPageData struct {
 }
 
 func (m *MainPageData) Populate() error {
-	file, err := os.ReadFile(".\\cmd\\web\\data\\mainPageData.json")
+	file, err := os.ReadFile("./cmd/web/data/mainPageData.json")
 	if err != nil {
 		return err
 	}
