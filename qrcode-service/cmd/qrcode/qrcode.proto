@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package logs;
+
+option go_package = "/qrcode";
+
+message QRCodeRequest{
+  string link = 1;
+  uint32 size = 2;
+}
+
+message QRCodeResponse {
+  string PNG = 1;
+}
+
+service QRCodeService {
+  rpc GetQRCode(QRCodeRequest) returns (QRCodeResponse);
+}

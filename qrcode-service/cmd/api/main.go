@@ -2,25 +2,29 @@ package main
 
 import (
 	"fmt"
+	"github.com/xederro/portfolio/qrcode-service/cmd/qrcode"
+	"google.golang.org/grpc"
 	"log"
-	"net/http"
+	"net"
 )
 
-const webPort = "8004"
+const port = 8000
 
 type App struct {
+	qrcode.UnimplementedQRCodeServiceServer
 }
 
 func main() {
-	app := App{}
-
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	err := srv.ListenAndServe()
+	lis, err := net.Listen("tcp", fmt.Sprintf("qrcode:%d", port))
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("failed to listen: %v", err)
+	}
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+
+	qrcode.RegisterQRCodeServiceServer(grpcServer, App{})
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Fatalln(err)
 	}
 }

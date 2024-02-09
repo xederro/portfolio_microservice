@@ -1,11 +1,10 @@
-module github.com/xederro/portfolio/qrcode-service
+module github.com/xederro/broker-service
 
-go 1.21.0
+go 1.21.4
 
 require (
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/cors v1.2.1
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	google.golang.org/grpc v1.61.0
 	google.golang.org/protobuf v1.32.0
 )

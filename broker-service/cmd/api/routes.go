@@ -21,10 +21,11 @@ func (a App) routes() http.Handler {
 		Debug:              false,
 	}))
 
-	mux.Post("/", a.GetQRCode)
 	mux.Options("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	})
+
+	mux.Post("/qrcode", a.GetQRCode)
 
 	return mux
 }

@@ -1,30 +1,15 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
-	qrcode "github.com/skip2/go-qrcode"
-	"net/http"
+	"github.com/skip2/go-qrcode"
+	qrcoderpc "github.com/xederro/portfolio/qrcode-service/cmd/qrcode"
 )
 
-type QRCodeDetails struct {
-	Link string `json:"link"`
-	Size uint   `json:"size"`
-}
-
-type QRCode struct {
-	PNG string `json:"png"`
-}
-
-func (a App) GetQRCode(w http.ResponseWriter, r *http.Request) {
-	var q QRCodeDetails
-	err := a.readJSON(w, r, &q)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
+func (a App) GetQRCode(ctx context.Context, q *qrcoderpc.QRCodeRequest) (*qrcoderpc.QRCodeResponse, error) {
 	if q.Size > 1024 {
 		q.Size = 1024
 	} else if q.Size < 100 {
@@ -32,16 +17,13 @@ func (a App) GetQRCode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(q.Link) == 0 {
-		a.errorJSON(w, errors.New("link is needed"))
-		return
+		return nil, errors.New("No Link")
 	}
 
-	var png []byte
-	png, err = qrcode.Encode(q.Link, qrcode.Medium, int(q.Size))
+	png, err := qrcode.Encode(q.Link, qrcode.Medium, int(q.Size))
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		return nil, errors.New("There was an error while encoding QRCode")
 	}
 
-	a.writeJSON(w, http.StatusAccepted, QRCode{PNG: fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(png))})
+	return &qrcoderpc.QRCodeResponse{PNG: fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(png))}, nil
 }

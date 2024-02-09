@@ -57,8 +57,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    ports:
-      - "8004:8004"
+#    ports:
+#      - "8000:8000"
   broker:
     env_file:
       - .env
@@ -72,7 +72,7 @@ services:
       mode: replicated
       replicas: 1
     ports:
-      - "8005:8005"
+      - "3000:3000"
   frontend:
     env_file:
       - .env
