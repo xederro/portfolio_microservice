@@ -26,6 +26,7 @@ func (a App) routes() http.Handler {
 	})
 
 	mux.Post("/qrcode", a.GetQRCode)
+	mux.Post("/auth", a.CheckAuth)
 
 	return mux
 }

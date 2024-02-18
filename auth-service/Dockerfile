@@ -12,5 +12,6 @@ RUN chmod +x /app/auth
 FROM alpine:latest
 RUN mkdir /app
 COPY --from=builder /app/auth /app
+COPY --from=builder /app/firebase.json /app
 
 CMD [ "/app/auth" ]

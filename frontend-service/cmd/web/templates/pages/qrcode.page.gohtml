@@ -4,7 +4,7 @@
     <div>
         <h1>{{.PageName}}@{{.SiteAddress}}:~$ QRCode</h1>
         <form hx-post="http://localhost:3000/qrcode" hx-ext='json-enc' hx-target="this" hx-swap="outerHTML" hx-request='{"credentials": true}'>
-{{/*            <input type="hidden" name="size" value="256">*/}}
+
             <fieldset>
                 <legend>Link</legend>
                 <input type="text" name="link" aria-label="url" value="https://example.com">

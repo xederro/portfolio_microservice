@@ -1,18 +1,18 @@
 version: '3'
 
 services:
-#  auth:
-#    env_file:
-#      - .env
-#    build:
-#      context:
-#        .
-#      dockerfile:
-#        ./auth-service/Dockerfile
-#    restart: always
-#    deploy:
-#      mode: replicated
-#      replicas: 1
+  auth:
+    env_file:
+      - .env
+    build:
+      context:
+        .
+      dockerfile:
+        ./auth-service/Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
 #    ports:
 #      - "8001:8001"
 #  weather:

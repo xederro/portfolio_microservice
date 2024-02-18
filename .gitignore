@@ -1,3 +1,4 @@
 **/.env
 **/.idea
 config/firebase.json
+/frontend-service/cmd/web/public/credentials.js
