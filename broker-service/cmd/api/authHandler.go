@@ -12,11 +12,13 @@ import (
 
 func (a App) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	var q auth.AuthRequest
+
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		a.errorJSON(w, errors.New("There was an error while getting cookie"), http.StatusNoContent)
 		return
 	}
+
 	q.Token = cookie.Value
 
 	fmt.Println(q.Token)

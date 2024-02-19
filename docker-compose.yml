@@ -10,11 +10,13 @@ services:
       dockerfile:
         ./auth-service/Dockerfile
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./auth-service/cmd
     deploy:
       mode: replicated
       replicas: 1
-#    ports:
-#      - "8001:8001"
 #  weather:
 #    env_file:
 #      - .env
@@ -45,6 +47,7 @@ services:
 #      - "8003:8003"
 #    depends_on:
 #      - auth
+
   qrcode:
     env_file:
       - .env
@@ -54,11 +57,14 @@ services:
       dockerfile:
         ./Dockerfile
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./qrcode-service/cmd
     deploy:
       mode: replicated
       replicas: 1
-#    ports:
-#      - "8000:8000"
+
   broker:
     env_file:
       - .env
@@ -68,11 +74,16 @@ services:
       dockerfile:
         ./Dockerfile
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./broker-service/cmd
     deploy:
       mode: replicated
       replicas: 1
     ports:
       - "3000:3000"
+
   frontend:
     env_file:
       - .env
@@ -82,8 +93,26 @@ services:
       dockerfile:
         ./Dockerfile
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./frontend-service/cmd
+          ignore:
+            - ./frontend-service/cmd/templates
+            - ./frontend-service/cmd/public
+            - ./frontend-service/cmd/data/mainPageData.json
+        - action: sync
+          path: ./frontend-service/cmd/templates
+          target: /app/cmd/web/templates
+        - action: sync
+          path: ./frontend-service/cmd/public
+          target: /app/cmd/web/public
+        - action: sync
+          path: ./frontend-service/cmd/data/mainPageData.json
+          target: /app/cmd/web/data
     deploy:
       mode: replicated
       replicas: 1
     ports:
       - "80:80"
+

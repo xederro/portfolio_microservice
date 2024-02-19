@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/xederro/portfolio/auth-service/cmd/auth"
-	"github.com/xederro/portfolio/auth-service/data"
+	"github.com/xederro/portfolio/auth-service/cmd/data"
 	"google.golang.org/grpc"
 	"log"
 	"net"
