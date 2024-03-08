@@ -47,14 +47,16 @@ func (m Model) GetUUID(token string) (string, error) {
 }
 
 func (m Model) CheckAuth(ctx context.Context, req *RPCAuth.AuthRequest) (*RPCAuth.AuthResponse, error) {
-	_, err := authClient.VerifyIDToken(context.TODO(), req.Token)
+	t, err := authClient.VerifyIDToken(context.TODO(), req.Token)
 	if err != nil {
 		return &RPCAuth.AuthResponse{
 			IsAuth: false,
+			User:   "",
 		}, err
 	}
 
 	return &RPCAuth.AuthResponse{
 		IsAuth: true,
+		User:   t.UID,
 	}, nil
 }

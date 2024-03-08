@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package logs;
+package qrcode;
 
 option go_package = "/qrcode";
 

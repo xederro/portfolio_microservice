@@ -1,82 +1,210 @@
 package main
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/xederro/portfolio/shortener-service/data"
-	"net/http"
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"github.com/xederro/portfolio/shortener-service/cmd/auth"
+	"github.com/xederro/portfolio/shortener-service/cmd/shortener"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"os"
 )
 
-func (a App) GetAll(w http.ResponseWriter, r *http.Request) {
-	token, err := r.Cookie("Bearer")
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
+var url = fmt.Sprintf("%s?authToken=%s", os.Getenv("TursoDataBaseLink"), os.Getenv("TursoDataBaseToken"))
 
-	uuid, err := data.GetUUID(token.Value)
-	if err != nil {
-		a.errorJSON(w, err, http.StatusUnauthorized)
-		return
-	}
-
-	all, err := a.Shortener.GetAll(uuid)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
-	}
-
-	a.writeJSON(w, http.StatusAccepted, all)
+type App struct {
+	shortener.UnimplementedShortenerServiceServer
 }
 
-func (a App) GetOne(w http.ResponseWriter, r *http.Request) {
-	short := chi.URLParam(r, "short")
+func (d App) GetOne(ctx context.Context, s *shortener.ShortenerGetOneRequest) (*shortener.ShortenerGetOneResponse, error) {
+	db := d.StartDB()
+	defer db.Close()
 
-	one, err := a.Shortener.GetOne(short)
+	var result shortener.ShortenerGetOneResponse
+
+	rows, err := db.Query("SELECT long FROM shortener WHERE short = ? LIMIT 1;", s.Short)
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		fmt.Println("failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	if rows.Next() {
+		err := rows.Scan(&result.Long)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("No link with provided short")
 	}
 
-	a.writeJSON(w, http.StatusAccepted, one)
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+
+	return &result, nil
 }
 
-func (a App) Insert(w http.ResponseWriter, r *http.Request) {
-	token, err := r.Cookie("Bearer")
+func (d App) GetAll(ctx context.Context, s *shortener.ShortenerGetAllRequest) (*shortener.ShortenerGetAllResponse, error) {
+	db := d.StartDB()
+	defer db.Close()
+	var results shortener.ShortenerGetAllResponse
+
+	uuid, err := d.GetUUID(s.Token)
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		fmt.Println("Error while getting UUID")
+		return nil, err
 	}
 
-	var s data.Shortener
-	err = a.readJSON(w, r, &s)
+	rows, err := db.Query("SELECT short, long FROM shortener WHERE user = ?;", uuid)
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		log.Fatalf("failed to execute query: %v\n", err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	for rows.Next() {
+		var row shortener.ShortenerRow
+
+		if err := rows.Scan(&row.Short, &row.Long); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		results.Rows = append(results.Rows, &row)
 	}
 
-	err = s.Insert(token.Value)
-	if err != nil {
-		a.errorJSON(w, err)
-		return
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
 	}
 
-	a.writeJSON(w, http.StatusAccepted, nil)
+	return &results, nil
 }
 
-func (a App) Delete(w http.ResponseWriter, r *http.Request) {
-	short := chi.URLParam(r, "short")
+func (d App) Insert(ctx context.Context, s *shortener.ShortenerInsertRequest) (*shortener.ShortenerInsertResponse, error) {
+	db := d.StartDB()
+	defer db.Close()
+	var short shortener.ShortenerInsertResponse
 
-	token, err := r.Cookie("Bearer")
+	uuid, err := d.GetUUID(s.Token)
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		fmt.Println("Error while getting UUID")
+		return nil, err
 	}
 
-	err = a.Shortener.Delete(short, token.Value)
+	rows, err := db.Query("INSERT INTO shortener (long, user) values (?,?);", s.Long, uuid)
 	if err != nil {
-		a.errorJSON(w, err)
-		return
+		log.Fatalf("failed to execute query: %v\n", err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	rows, err = db.Query("SELECT max(short) FROM shortener;")
+	if err != nil {
+		log.Fatalf("failed to execute query: %v\n", err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	if rows.Next() {
+		err := rows.Scan(&short.Short)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+			return nil, err
+		}
 	}
 
-	a.writeJSON(w, http.StatusAccepted, nil)
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+
+	return &short, nil
+}
+
+func (d App) Delete(ctx context.Context, s *shortener.ShortenerDeleteRequest) (*shortener.ShortenerDeleteResponse, error) {
+	db := d.StartDB()
+	defer db.Close()
+	uuid, err := d.GetUUID(s.Token)
+	if err != nil {
+		fmt.Println("Error while getting UUID")
+		return nil, err
+	}
+
+	rows, err := db.Query("delete from shortener where short = ? and user = ?;", s.Short, uuid)
+	if err != nil {
+		log.Fatalf("failed to execute query: %v\n", err)
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	return &shortener.ShortenerDeleteResponse{}, nil
+}
+
+func (d App) GetUUID(token string) (string, error) {
+	q := auth.AuthRequest{
+		Token: token,
+	}
+	var opts []grpc.DialOption
+
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.Dial("auth:8000", opts...)
+	if err != nil {
+		log.Println("There was an error while establishing connection")
+		return "", err
+	}
+	defer conn.Close()
+
+	client := auth.NewAuthServiceClient(conn)
+
+	response, err := client.CheckAuth(context.TODO(), &q)
+	if err != nil {
+		log.Println("There was an error")
+		return "", err
+	}
+
+	if !response.GetIsAuth() {
+		err := errors.New("user cannot be authenticated")
+		log.Println(err)
+		return "", err
+	}
+
+	return response.GetUser(), nil
+}
+
+func (d App) StartDB() *sql.DB {
+	db, err := sql.Open("libsql", url)
+	if err != nil {
+		log.Fatalf("failed to open db %s: %s", url, err)
+	}
+	return db
 }

@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
-	"github.com/xederro/broker-service/cmd/auth"
+	"github.com/xederro/portfolio/broker-service/cmd/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -20,8 +19,6 @@ func (a App) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	q.Token = cookie.Value
-
-	fmt.Println(q.Token)
 
 	var opts []grpc.DialOption
 

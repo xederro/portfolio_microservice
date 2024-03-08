@@ -17,6 +17,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
 #  weather:
 #    env_file:
 #      - .env
@@ -29,24 +30,25 @@ services:
 #    deploy:
 #      mode: replicated
 #      replicas: 1
-#    ports:
-#      - "8002:8002"
-#  shortener:
-#    env_file:
-#      - .env
-#    build:
-#      context:
-#        ./shortener-service
-#      dockerfile:
-#        ./Dockerfile
-#    restart: always
-#    deploy:
-#      mode: replicated
-#      replicas: 1
-#    ports:
-#      - "8003:8003"
-#    depends_on:
-#      - auth
+
+  shortener:
+    env_file:
+      - .env
+    build:
+      context:
+        ./shortener-service
+      dockerfile:
+        ./Dockerfile
+    restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: ./shortener-service/cmd
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - auth
 
   qrcode:
     env_file:

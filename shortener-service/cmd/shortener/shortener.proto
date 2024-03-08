@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package shortener;
+
+option go_package = "/shortener";
+
+message ShortenerInsertRequest {
+  string long = 1;
+  string token = 2;
+}
+
+message ShortenerDeleteRequest {
+  string short = 1;
+  string token = 2;
+}
+
+message ShortenerGetOneRequest {
+  string short = 1;
+}
+
+message ShortenerGetAllRequest {
+  string token = 1;
+}
+
+message ShortenerInsertResponse {
+  string short = 1;
+}
+
+message ShortenerGetOneResponse {
+  string long = 1;
+}
+
+message ShortenerRow {
+  string short = 1;
+  string long = 2;
+}
+
+message ShortenerGetAllResponse {
+  repeated ShortenerRow rows = 1;
+}
+
+message ShortenerDeleteResponse {}
+
+service ShortenerService {
+  rpc GetOne(ShortenerGetOneRequest) returns (ShortenerGetOneResponse);
+  rpc GetAll(ShortenerGetAllRequest) returns (ShortenerGetAllResponse);
+  rpc Insert(ShortenerInsertRequest) returns (ShortenerInsertResponse);
+  rpc Delete(ShortenerDeleteRequest) returns (ShortenerDeleteResponse);
+}

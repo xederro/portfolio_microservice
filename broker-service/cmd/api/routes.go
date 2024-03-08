@@ -26,7 +26,13 @@ func (a App) routes() http.Handler {
 	})
 
 	mux.Post("/qrcode", a.GetQRCode)
+
 	mux.Post("/auth", a.CheckAuth)
+
+	mux.Get("/shortener", a.GetAll)
+	mux.Post("/shortener", a.Insert)
+	mux.Get("/shortener/{short}", a.GetOne)
+	mux.Delete("/shortener/{short}", a.Delete)
 
 	return mux
 }

@@ -1,4 +1,4 @@
-module github.com/xederro/broker-service
+module github.com/xederro/portfolio/broker-service
 
 go 1.21.4
 

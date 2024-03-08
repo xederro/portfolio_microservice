@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/xederro/broker-service/cmd/qrcode"
+	"github.com/xederro/portfolio/broker-service/cmd/qrcode"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"

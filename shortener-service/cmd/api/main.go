@@ -2,29 +2,27 @@ package main
 
 import (
 	"fmt"
-	"github.com/xederro/portfolio/shortener-service/data"
+	"github.com/xederro/portfolio/shortener-service/cmd/shortener"
+	"google.golang.org/grpc"
 	"log"
-	"net/http"
+	"net"
 )
 
-const webPort = "8003"
-
-type App struct {
-	Shortener data.Shortener
-}
+const port = 8000
 
 func main() {
-	app := App{
-		Shortener: data.NewShortener(),
-	}
+	app := App{}
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	err := srv.ListenAndServe()
+	lis, err := net.Listen("tcp", fmt.Sprintf("shortener:%d", port))
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("failed to listen: %v", err)
+	}
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+
+	shortener.RegisterShortenerServiceServer(grpcServer, app)
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Fatalln(err)
 	}
 }
